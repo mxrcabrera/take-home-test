@@ -51,7 +51,6 @@ migrations/
 node_modules/
 dist/
 coverage/
-angular.json
 package-lock.json
 yarn.lock
 pnpm-lock.yaml

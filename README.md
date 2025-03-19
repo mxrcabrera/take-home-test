@@ -49,10 +49,9 @@ Develop a **lightweight Angular app** to interact with the backend
 
 #### **Features:**  
 - A **table** to display a list of existing loans.  
-- A **detail page** to view loan information.  
 
 #### **Mockup:**  
-[View Mockup](https://kzmh5gxvol11bpzcifrm.lite.vusercontent.net/)  
+[View Mockup](https://kzmgtjqt0vx63yji8h9l.lite.vusercontent.net/)  
 (*The design doesn’t need to be an exact replica of the mockup—it serves as a reference. Aim to keep it as close as possible.*)  
 
 ---
@@ -62,7 +61,6 @@ Develop a **lightweight Angular app** to interact with the backend
 * **Improve error handling and logging** with structured logs.
 * Implement **authentication**.
 * Create a **GitHub Actions** pipeline for building and testing the backend.
-* Consider using libraries like **Material Design** to enhance the frontend UI.
 
 ---
 
