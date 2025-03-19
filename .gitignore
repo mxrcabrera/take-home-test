@@ -1,0 +1,88 @@
+# --- .NET ---
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+*.app
+*.so
+*.dylib
+*.db
+*.log
+*.csproj.user
+*.csproj.vs.json
+*.suo
+*.sln.ide
+*.userosscache
+*.sln.docstates
+
+# Rider / VS Code
+.idea/
+.vscode/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+*.swp
+*.sln.cache
+
+# User-specific configurations
+*.vs/
+.vs/
+
+# Dotnet CLI
+.dotnet/
+
+# Local dependency configuration
+.nuget/
+packages/
+project.lock.json
+project.assets.json
+
+# Development certificates
+*.pfx
+*.p12
+
+# Entity Framework Migrations
+migrations/
+
+# --- ANGULAR / TypeScript ---
+node_modules/
+dist/
+coverage/
+angular.json
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+.npmrc
+.npm/
+.nodemon-debug.json
+
+# IDEs and editors
+/.idea/
+/.vscode/
+/.editorconfig
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build files
+/.angular/
+out-tsc/
+.DS_Store
+
+# Environment and credentials
+.env
+.env.local
+.env.*.local
+
+# Tests
+karma.conf.js
+test-report/
+junit.xml
+mocha.json
