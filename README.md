@@ -1,83 +1,229 @@
-# **Take-Home Test: Backend-Focused Full-Stack Developer (.NET C# & Angular)**
+# Loan Management System
 
-## **Objective**
+A full-stack Loan Management System built with .NET Core (C#) backend and Angular frontend.
 
-This take-home test evaluates your ability to develop and integrate a .NET Core (C#) backend with an Angular frontend, focusing on API design, database integration, and basic DevOps practices.
+## Overview
 
-## **Instructions**
+This application provides a RESTful API for managing loan applications and a simple Angular frontend to display loan information. The system includes:
 
-1.  **Fork the provided repository** before starting the implementation.
-2.  Implement the requested features in your forked repository.
-3.  Once you have completed the implementation, **send the link** to your forked repository via email for review.
+- **Backend**: .NET 6.0 Web API with Entity Framework Core and SQL Server
+- **Frontend**: Angular 19 with Material Design
+- **Database**: SQL Server with seed data
+- **Testing**: Unit and integration tests using xUnit
+- **DevOps**: Docker and Docker Compose for containerization
 
-## **Task**
+## Features
 
-You will build a simple **Loan Management System** with a **.NET Core backend (C#)** exposing RESTful APIs and a **basic Angular frontend** consuming these APIs.
+### Backend API Endpoints
 
----
+- `POST /loans` - Create a new loan
+- `GET /loans` - List all loans
+- `GET /loans/{id}` - Retrieve loan details by ID
+- `POST /loans/{id}/payment` - Make a payment on a loan
 
-## **Requirements**
+### Frontend
 
-### **1. Backend (API) - .NET Core**
+- Display list of loans in a table format
+- Real-time data fetching from backend API
+- Loading and error states
+- Responsive design
 
-* Create a **RESTful API** in .NET Core to handle **loan applications**.
-* Implement the following endpoints:
-    * `POST /loans` → Create a new loan.
-    * `GET /loans/{id}` → Retrieve loan details.
-    * `GET /loans` → List all loans.
-    * `POST /loans/{id}/payment` → Deduct from `currentBalance`.
-* Loan example (feel free to improve it):
+## Setup Instructions
 
-    ```json
-    {
-        "amount": 1500.00, // Amount requested
-        "currentBalance": 500.00, // Remaining balance
-        "applicantName": "Maria Silva", // User name
-        "status": "active" // Status can be active or paid
-    }
-    ```
+### Prerequisites
 
-* Use **Entity Framework Core** with **SQL Server**.
-* Create seed data to populate the loans (the frontend will consume this).
-* Write **unit/integration tests for the API** (xUnit or NUnit).
-* **Dockerize** the backend and create a **Docker Compose** file.
-* Create a README with setup instructions.
+- .NET 6.0 SDK
+- Node.js (v18 or higher)
+- Docker and Docker Compose (optional, for containerized deployment)
+- SQL Server (if not using Docker)
 
-### **2. Frontend - Angular (Simplified UI)**  
+### Backend Setup
 
-Develop a **lightweight Angular app** to interact with the backend
+1. Navigate to the backend directory:
+```bash
+cd backend/src
+```
 
-#### **Features:**  
-- A **table** to display a list of existing loans.  
+2. Restore NuGet packages:
+```bash
+dotnet restore
+```
 
-#### **Mockup:**  
-[View Mockup](https://kzmgtjqt0vx63yji8h9l.lite.vusercontent.net/)  
-(*The design doesn’t need to be an exact replica of the mockup—it serves as a reference. Aim to keep it as close as possible.*)  
+3. Update the connection string in `Fundo.Applications.WebApi/appsettings.json`:
+```json
+"ConnectionStrings": {
+  "DefaultConnection": "Server=localhost,1433;Database=LoanManagementDb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;"
+}
+```
 
----
+4. Run the API:
+```bash
+cd Fundo.Applications.WebApi
+dotnet run
+```
 
-## **Bonus (Optional, Not Required)**
+The API will be available at `http://localhost:5000` with Swagger UI at `http://localhost:5000/swagger`.
 
-* **Improve error handling and logging** with structured logs.
-* Implement **authentication**.
-* Create a **GitHub Actions** pipeline for building and testing the backend.
+### Frontend Setup
 
----
+1. Navigate to the frontend directory:
+```bash
+cd frontend
+```
 
-## **Evaluation Criteria**
+2. Install dependencies:
+```bash
+npm install
+```
 
-✔ **Code quality** (clean architecture, modularization, best practices).
+3. Start the Angular development server:
+```bash
+npm start
+```
 
-✔ **Functionality** (the API and frontend should work as expected).
+The frontend will be available at `http://localhost:4200`.
 
-✔ **Security considerations** (authentication, validation, secure API handling).
+### Running with Docker Compose
 
-✔ **Testing coverage** (unit tests for critical backend functions).
+1. From the root directory, run:
+```bash
+docker-compose up
+```
 
-✔ **Basic DevOps implementation** (Docker for backend).
+This will start both the SQL Server database and the .NET API in containers.
 
----
+### Running Tests
 
-## **Additional Information**
+#### Backend Tests
 
-Candidates are encouraged to include a `README.md` file in their repository detailing their implementation approach, any challenges they faced, features they couldn't complete, and any improvements they would make given more time. Ideally, the implementation should be completed within **two days** of starting the test.
+1. Navigate to the backend test directory:
+```bash
+cd backend/src/Fundo.Services.Tests
+```
+
+2. Run tests:
+```bash
+dotnet test
+```
+
+#### Frontend Tests
+
+```bash
+cd frontend
+npm test
+```
+
+## API Documentation
+
+Once the backend is running, access the Swagger UI at `http://localhost:5000/swagger` for interactive API documentation.
+
+### Loan Model
+
+```json
+{
+  "id": 1,
+  "amount": 25000.00,
+  "currentBalance": 18750.00,
+  "applicantName": "John Doe",
+  "status": "active",
+  "createdAt": "2024-01-15T10:30:00Z",
+  "updatedAt": null
+}
+```
+
+### Create Loan Request
+
+```json
+{
+  "amount": 15000.00,
+  "applicantName": "Jane Smith"
+}
+```
+
+### Payment Request
+
+```json
+{
+  "amount": 5000.00
+}
+```
+
+## Implementation Approach
+
+### Architecture
+
+- **Clean Architecture**: Separation of concerns with Models, DTOs, and Controllers
+- **Repository Pattern**: DbContext for data access
+- **Dependency Injection**: Services injected through constructor
+- **DTOs**: Separate data transfer objects for API contracts
+
+### Key Decisions
+
+1. **Entity Framework Core**: Chosen for its robust ORM capabilities and SQL Server integration
+2. **xUnit**: Selected for testing due to its simplicity and wide adoption in .NET ecosystem
+3. **Angular Material**: Used for UI components to provide a consistent, professional look
+4. **Swagger**: Included for API documentation and testing
+5. **Docker**: Containerization for easy deployment and environment consistency
+
+### Challenges Faced
+
+1. **Initial Project Structure**: Had to reorganize the existing structure to follow clean architecture principles
+2. **Database Seeding**: Implemented a custom DbInitializer to populate seed data on startup
+3. **CORS Configuration**: Added CORS policy to allow frontend-backend communication
+4. **Angular Service Integration**: Created a service layer to handle HTTP requests with proper error handling
+
+### Features Implemented
+
+✅ All required API endpoints (POST /loans, GET /loans, GET /loans/{id}, POST /loans/{id}/payment)
+✅ Entity Framework Core with SQL Server
+✅ Seed data for initial loans
+✅ Unit tests for API endpoints
+✅ Integration tests for API with business logic validation
+✅ Docker and Docker Compose configuration with healthcheck
+✅ Angular frontend with Material Design table
+✅ Real-time data fetching from API
+✅ Loading and error states in frontend
+✅ Swagger API documentation
+✅ GitHub Actions CI/CD pipeline for automated testing
+
+### Potential Improvements
+
+Given more time, the following improvements could be made:
+
+1. **Authentication**: Implement JWT-based authentication and authorization
+2. **Validation**: Add more comprehensive input validation with FluentValidation
+3. **Logging**: Implement structured logging with Serilog
+4. **Pagination**: Add pagination support for the loans list endpoint
+5. **Filtering and Sorting**: Add filtering and sorting capabilities to the API
+6. **Frontend Forms**: Add forms for creating loans and making payments
+7. **Error Handling**: Implement global error handling middleware
+8. **API Versioning**: Implement API versioning for future compatibility
+9. **Unit Tests for Frontend**: Add unit tests for Angular components and services
+
+## Project Structure
+
+```
+take-home-test/
+├── backend/
+│   └── src/
+│       ├── Fundo.Applications.WebApi/
+│       │   ├── Controllers/
+│       │   ├── Data/
+│       │   ├── DTOs/
+│       │   ├── Models/
+│       │   └── Program.cs
+│       └── Fundo.Services.Tests/
+│           ├── Integration/
+│           └── Unit/
+├── frontend/
+│   └── src/
+│       └── app/
+│           ├── services/
+│           └── ...
+├── docker-compose.yml
+└── README.md
+```
+
+## Contact
+
+For questions or issues, please refer to the original take-home test instructions.

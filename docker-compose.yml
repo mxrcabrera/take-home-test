@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: loan-management-db
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "YourStrong@Passw0rd"
+    ports:
+      - "1433:1433"
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourStrong@Passw0rd -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - loan-network
+
+  api:
+    build:
+      context: ./backend/src
+      dockerfile: Fundo.Applications.WebApi/Dockerfile
+    container_name: loan-management-api
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=db,1433;Database=LoanManagementDb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - loan-network
+
+networks:
+  loan-network:
+    driver: bridge

@@ -9,6 +9,31 @@
   &--container {
     width: 60%;
   }
+
+  .loading {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+    font-size: 1.1rem;
+  }
+
+  .error {
+    text-align: center;
+    padding: 2rem;
+    color: #d32f2f;
+    font-size: 1.1rem;
+
+    button {
+      margin-top: 1rem;
+    }
+  }
+
+  .no-data {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+    font-size: 1.1rem;
+  }
 }
 
 .mdc-data-table {
