@@ -2,6 +2,7 @@
 using Fundo.Applications.WebApi.DTOs;
 using Fundo.Applications.WebApi.Models;
 using Fundo.Applications.WebApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace Fundo.Applications.WebApi.Controllers
 {
     [Route("loans")]
     [ApiController]
+    [Authorize]
     public class LoansController : ControllerBase
     {
         private readonly ILoanService _loanService;

@@ -1,0 +1,154 @@
+<div class="dashboard">
+
+  <!-- ── Header ─────────────────────────────────────────────────────────────── -->
+  <header class="dashboard__header">
+    <div class="brand">
+      <div class="brand__icon" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="5" width="20" height="14" rx="2"/>
+          <line x1="2" y1="10" x2="22" y2="10"/>
+        </svg>
+      </div>
+      <span class="brand__name">LoanOS</span>
+    </div>
+
+    <div class="topbar__actions">
+      <div class="live-indicator" aria-label="Live data">
+        <span class="live-indicator__dot"></span>
+        LIVE
+      </div>
+      <button type="button" (click)="logout()" class="btn btn--ghost" title="Logout">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        Logout
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Main content ───────────────────────────────────────────────────────── -->
+  <main class="dashboard__main">
+
+    <!-- Hero -->
+    <div class="hero">
+      <h1 class="hero__title">Loan Portfolio</h1>
+      <p class="hero__subtitle">Real-time management dashboard</p>
+    </div>
+
+    <!-- Stats grid — shown only when data is available -->
+    <div class="stats-grid" *ngIf="!isLoading && !error && loans.length > 0">
+      <div class="stat-card" id="stat-total-loans">
+        <span class="stat-card__label">Total Loans</span>
+        <span class="stat-card__value">{{ loans.length }}</span>
+      </div>
+
+      <div class="stat-card" id="stat-disbursed">
+        <span class="stat-card__label">Total Disbursed</span>
+        <span class="stat-card__value stat-card__value--cyan">
+          {{ totalAmount | currency }}
+        </span>
+      </div>
+
+      <div class="stat-card" id="stat-balance">
+        <span class="stat-card__label">Outstanding Balance</span>
+        <span class="stat-card__value stat-card__value--indigo">
+          {{ totalBalance | currency }}
+        </span>
+      </div>
+
+      <div class="stat-card" id="stat-active">
+        <span class="stat-card__label">Active Loans</span>
+        <span class="stat-card__value stat-card__value--green">{{ activeCount }}</span>
+      </div>
+    </div>
+
+    <!-- Loading state -->
+    <div *ngIf="isLoading" class="state-card state-card--loading" id="loading-state">
+      <div class="spinner" aria-label="Loading"></div>
+      <p>Loading portfolio&hellip;</p>
+    </div>
+
+    <!-- Error state -->
+    <div *ngIf="error" class="state-card state-card--error" id="error-state" role="alert">
+      <span class="state-card__icon" aria-hidden="true">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </span>
+      <p>{{ error }}</p>
+      <button type="button" class="btn btn--primary" id="btn-retry" (click)="loadLoans()">Retry</button>
+    </div>
+
+    <!-- Table section -->
+    <div class="table-section" *ngIf="!isLoading && !error">
+      <div class="table-header">
+        <h2 class="table-header__title">All Loans</h2>
+        <span class="table-header__count" *ngIf="loans.length > 0">
+          {{ loans.length }} record{{ loans.length === 1 ? '' : 's' }}
+        </span>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="loans.length === 0" class="state-card state-card--empty" id="empty-state">
+        <span class="state-card__icon" aria-hidden="true">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 11l3 3L22 4"/>
+            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+          </svg>
+        </span>
+        <p>No loans found in the portfolio.</p>
+      </div>
+
+      <!-- Loans table -->
+      <div class="table-wrapper" *ngIf="loans.length > 0">
+        <table mat-table [dataSource]="loans" id="loans-table" aria-label="Loans portfolio table">
+
+          <!-- Loan Amount -->
+          <ng-container matColumnDef="loanAmount">
+            <th mat-header-cell *matHeaderCellDef>Loan Amount</th>
+            <td mat-cell *matCellDef="let element" class="cell--amount">
+              {{ element.loanAmount | currency }}
+            </td>
+          </ng-container>
+
+          <!-- Current Balance -->
+          <ng-container matColumnDef="currentBalance">
+            <th mat-header-cell *matHeaderCellDef>Current Balance</th>
+            <td mat-cell *matCellDef="let element" class="cell--balance">
+              {{ element.currentBalance | currency }}
+            </td>
+          </ng-container>
+
+          <!-- Applicant -->
+          <ng-container matColumnDef="applicant">
+            <th mat-header-cell *matHeaderCellDef>Applicant</th>
+            <td mat-cell *matCellDef="let element">
+              <div class="cell-applicant">
+                <div class="avatar" aria-hidden="true">{{ getInitials(element.applicant) }}</div>
+                <span>{{ element.applicant }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Status -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let element">
+              <span class="badge" [ngClass]="getStatusClass(element.status)">
+                {{ element.status }}
+              </span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>

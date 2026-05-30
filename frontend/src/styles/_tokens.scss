@@ -1,0 +1,96 @@
+// ─── Design Tokens ────────────────────────────────────────────────────────────
+// All values exposed as CSS custom properties for runtime-accessible theming.
+
+:root {
+  // Backgrounds
+  --bg-base:       #070b14;
+  --bg-surface:    #0d1424;
+  --bg-elevated:   #131d32;
+  --bg-card:       #192038;
+  --bg-card-hover: #1f2a48;
+
+  // Brand / Primary — Indigo
+  --clr-primary:      hsl(239, 84%, 67%);       // #6366f1
+  --clr-primary-dim:  hsla(239, 84%, 67%, 0.12);
+  --clr-primary-glow: hsla(239, 84%, 67%, 0.25);
+  --clr-primary-border: hsla(239, 84%, 67%, 0.35);
+
+  // Accent — Cyan (for monetary values)
+  --clr-cyan:     hsl(190, 95%, 43%);            // #06b6d4
+  --clr-cyan-dim: hsla(190, 95%, 43%, 0.12);
+
+  // Status — Success / Green
+  --clr-success:     hsl(160, 84%, 39%);         // #10b981
+  --clr-success-dim: hsla(160, 84%, 39%, 0.12);
+
+  // Status — Warning / Amber
+  --clr-warning:     hsl(38, 92%, 50%);          // #f59e0b
+  --clr-warning-dim: hsla(38, 92%, 50%, 0.12);
+
+  // Status — Danger / Red
+  --clr-danger:     hsl(0, 84%, 60%);            // #ef4444
+  --clr-danger-dim: hsla(0, 84%, 60%, 0.12);
+
+  // Status — Neutral / Slate
+  --clr-neutral:     hsl(215, 20%, 65%);         // #94a3b8
+  --clr-neutral-dim: hsla(215, 20%, 65%, 0.12);
+
+  // Text
+  --text-primary:   #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted:     #475569;
+
+  // Borders
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-card:   rgba(255, 255, 255, 0.04);
+  --border-focus:  hsla(239, 84%, 67%, 0.4);
+
+  // Spacing scale (4px base)
+  --sp-1:  0.25rem;
+  --sp-2:  0.5rem;
+  --sp-3:  0.75rem;
+  --sp-4:  1rem;
+  --sp-5:  1.25rem;
+  --sp-6:  1.5rem;
+  --sp-8:  2rem;
+  --sp-10: 2.5rem;
+  --sp-12: 3rem;
+  --sp-16: 4rem;
+
+  // Border radii — scale
+  --r-sm:   6px;
+  --r-md:   10px;
+  --r-lg:   16px;
+  --r-xl:   24px;
+  --r-pill: 9999px;
+
+  // Semantic radii — use these in UI (consistent roundings)
+  --r-control: 1.25rem;  // text fields, all buttons
+  --r-surface: 2rem;     // cards, panels, table container, login card
+  --r-inset:   var(--r-lg); // alerts / messages inside a surface
+  --r-circle:  50%;      // avatars, icon toggles, spinners
+
+  // Typography — display serif + UI sans (Bria Quartz OEM Lab style)
+  --font-display: 'Cormorant Garamond', 'Georgia', 'Times New Roman', serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+
+  // Type scale
+  --fs-xs:   0.75rem;
+  --fs-sm:   0.875rem;
+  --fs-base: 1rem;
+  --fs-lg:   1.125rem;
+  --fs-xl:   1.25rem;
+  --fs-2xl:  1.5rem;
+  --fs-3xl:  1.875rem;
+  --fs-4xl:  2.25rem;
+
+  // Shadows
+  --shadow-sm:   0 1px 8px rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 4px 32px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 64px hsla(239, 84%, 67%, 0.1);
+
+  // Transitions
+  --ease: 0.2s ease;
+  --ease-spring: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}

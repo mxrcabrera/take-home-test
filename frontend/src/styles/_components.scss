@@ -1,0 +1,254 @@
+// Shared UI components — layout & structure only; colors from _tokens.scss
+
+// Legacy aliases (same palette, no new hues)
+:root {
+  --primary-color: var(--clr-primary);
+  --accent-color: var(--clr-cyan);
+  --bg-primary: var(--bg-base);
+  --radius-md: var(--r-control);
+}
+
+// ─── Buttons ───────────────────────────────────────────────────────────────────
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-6);
+  border-radius: var(--r-control);
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: transform var(--ease), box-shadow var(--ease), filter var(--ease), background var(--ease);
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  &--block {
+    width: 100%;
+    min-height: 52px;
+    padding: var(--sp-4) var(--sp-6);
+  }
+
+  &--primary {
+    background: linear-gradient(135deg, var(--clr-primary), var(--clr-cyan));
+    color: #fff;
+    box-shadow: 0 4px 14px var(--clr-primary-glow);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px var(--clr-primary-glow);
+      filter: brightness(1.05);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(1px);
+      box-shadow: 0 2px 8px var(--clr-primary-glow);
+    }
+
+    &:disabled {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  &--ghost {
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--r-control);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    padding: var(--sp-2) var(--sp-4);
+
+    &:hover:not(:disabled) {
+      background: var(--clr-danger-dim);
+      color: var(--clr-danger);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+  }
+}
+
+// ─── Form controls ─────────────────────────────────────────────────────────────
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+
+  label {
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+    padding-left: var(--sp-2);
+  }
+}
+
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .input-icon {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    color: var(--text-muted);
+
+    &.interactive {
+      color: var(--text-secondary);
+      transition: color var(--ease);
+
+      &:hover {
+        color: var(--text-primary);
+      }
+    }
+  }
+
+  &:not(:has(.icon-button)) {
+    .input-icon {
+      left: var(--sp-4);
+    }
+
+    .form-control {
+      padding-left: 3rem;
+    }
+  }
+
+  .icon-button {
+    position: absolute;
+    right: var(--sp-2);
+    background: none;
+    border: none;
+    padding: var(--sp-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: var(--r-circle);
+
+    &:focus-visible {
+      outline: none;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .input-icon {
+      position: relative;
+    }
+  }
+}
+
+.form-control {
+  width: 100%;
+  background-color: rgba(15, 23, 42, 0.4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-control);
+  padding: var(--sp-4) var(--sp-5);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  transition: border-color var(--ease), background-color var(--ease), box-shadow var(--ease);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    background-color: rgba(15, 23, 42, 0.6);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 3px var(--clr-primary-dim);
+  }
+}
+
+// ─── Alerts & feedback ─────────────────────────────────────────────────────────
+
+.error-message {
+  color: var(--clr-danger);
+  font-size: var(--fs-sm);
+  text-align: center;
+  background-color: var(--clr-danger-dim);
+  padding: var(--sp-3);
+  border-radius: var(--r-inset);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.hint {
+  text-align: center;
+  margin-top: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+
+// ─── Surfaces (shared card shell) ──────────────────────────────────────────────
+
+.surface {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-surface);
+}
+
+// ─── Topbar (dashboard header actions) ─────────────────────────────────────────
+
+.topbar__actions {
+  display: flex;
+  gap: var(--sp-6);
+  align-items: center;
+}
+
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+
+  &__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: var(--r-circle);
+    background: var(--clr-success);
+    box-shadow: 0 0 8px var(--clr-success);
+    animation: pulse-dot 2.4s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.85);
+  }
+}
+
+.spinner-small {
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--r-circle);
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

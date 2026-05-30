@@ -16,10 +16,11 @@ This application provides a RESTful API for managing loan applications and a sim
 
 ### Backend API Endpoints
 
-- `POST /loans` - Create a new loan
-- `GET /loans` - List all loans
-- `GET /loans/{id}` - Retrieve loan details by ID
-- `POST /loans/{id}/payment` - Make a payment on a loan
+- `POST /api/auth/login` - Login and get JWT token
+- `POST /loans` - Create a new loan (requires authentication)
+- `GET /loans` - List all loans (requires authentication)
+- `GET /loans/{id}` - Retrieve loan details by ID (requires authentication)
+- `POST /loans/{id}/payment` - Make a payment on a loan (requires authentication)
 
 ### Frontend
 
@@ -27,6 +28,7 @@ This application provides a RESTful API for managing loan applications and a sim
 - Real-time data fetching from backend API
 - Loading and error states
 - Responsive design
+- JWT authentication with login functionality
 
 ## Setup Instructions
 
@@ -113,9 +115,43 @@ cd frontend
 npm test
 ```
 
+## Authentication
+
+The application uses JWT (JSON Web Token) authentication for securing API endpoints.
+
+### Default Credentials
+
+- **Username**: `admin`
+- **Password**: `admin123`
+
+### How It Works
+
+1. **Login**: Users authenticate by sending their credentials to `POST /api/auth/login`
+2. **Token Generation**: The backend validates credentials and returns a JWT token
+3. **Token Storage**: The frontend stores the token in localStorage
+4. **Token Usage**: All subsequent API requests include the token in the `Authorization` header as `Bearer {token}`
+5. **Token Validation**: The backend validates the token on each protected endpoint
+6. **Token Expiration**: Tokens expire after 8 hours
+
+### Protected Endpoints
+
+All loan management endpoints (`/loans`) require authentication:
+- `POST /loans` - Create a new loan
+- `GET /loans` - List all loans
+- `GET /loans/{id}` - Retrieve loan details
+- `POST /loans/{id}/payment` - Make a payment
+
+### Frontend Authentication Flow
+
+1. User enters credentials in the login form
+2. Frontend calls `/api/auth/login` endpoint
+3. On successful login, token is stored in localStorage
+4. All API calls include the JWT token in headers
+5. User can logout to clear the token
+
 ## API Documentation
 
-Once the backend is running, access the Swagger UI at `http://localhost:5000/swagger` for interactive API documentation.
+Once the backend is running, access the Swagger UI at `http://localhost:5000/swagger` for interactive API documentation. Note that protected endpoints require authentication via the "Authorize" button in Swagger.
 
 ### Loan Model
 
@@ -185,20 +221,26 @@ Once the backend is running, access the Swagger UI at `http://localhost:5000/swa
 ✅ Loading and error states in frontend
 ✅ Swagger API documentation
 ✅ GitHub Actions CI/CD pipeline for automated testing
+✅ JWT authentication and authorization (Bonus)
+✅ Service layer for clean architecture (Audit improvement)
+✅ AsNoTracking for query optimization (Audit improvement)
+✅ Environment-based configuration for frontend (Audit improvement)
+✅ Observable subscription management (Audit improvement)
+✅ Global error handling without StackTrace exposure (Audit improvement)
 
 ### Potential Improvements
 
 Given more time, the following improvements could be made:
 
-1. **Authentication**: Implement JWT-based authentication and authorization
-2. **Validation**: Add more comprehensive input validation with FluentValidation
-3. **Logging**: Implement structured logging with Serilog
-4. **Pagination**: Add pagination support for the loans list endpoint
-5. **Filtering and Sorting**: Add filtering and sorting capabilities to the API
-6. **Frontend Forms**: Add forms for creating loans and making payments
-7. **Error Handling**: Implement global error handling middleware
-8. **API Versioning**: Implement API versioning for future compatibility
-9. **Unit Tests for Frontend**: Add unit tests for Angular components and services
+1. **Validation**: Add more comprehensive input validation with FluentValidation
+2. **Logging**: Implement structured logging with Serilog
+3. **Pagination**: Add pagination support for the loans list endpoint
+4. **Filtering and Sorting**: Add filtering and sorting capabilities to the API
+5. **Frontend Forms**: Add forms for creating loans and making payments
+6. **Password Hashing**: Implement proper password hashing (BCrypt) instead of plain text
+7. **API Versioning**: Implement API versioning for future compatibility
+8. **Unit Tests for Frontend**: Add unit tests for Angular components and services
+9. **Refresh Tokens**: Implement refresh token mechanism for better security
 
 ## Project Structure
 
@@ -208,18 +250,51 @@ take-home-test/
 │   └── src/
 │       ├── Fundo.Applications.WebApi/
 │       │   ├── Controllers/
+│       │   │   ├── AuthController.cs
+│       │   │   └── LoanManagementController.cs
 │       │   ├── Data/
+│       │   │   ├── DbInitializer.cs
+│       │   │   └── LoanDbContext.cs
 │       │   ├── DTOs/
+│       │   │   ├── CreateLoanDto.cs
+│       │   │   ├── LoanDto.cs
+│       │   │   ├── LoginDto.cs
+│       │   │   └── PaymentDto.cs
 │       │   ├── Models/
-│       │   └── Program.cs
+│       │   │   ├── Loan.cs
+│       │   │   └── User.cs
+│       │   ├── Services/
+│       │   │   ├── IAuthService.cs
+│       │   │   ├── AuthService.cs
+│       │   │   ├── ILoanService.cs
+│       │   │   └── LoanService.cs
+│       │   ├── Constants/
+│       │   │   └── LoanConstants.cs
+│       │   ├── Program.cs
+│       │   ├── Startup.cs
+│       │   └── appsettings.json
 │       └── Fundo.Services.Tests/
 │           ├── Integration/
 │           └── Unit/
 ├── frontend/
 │   └── src/
-│       └── app/
-│           ├── services/
-│           └── ...
+│       ├── app/
+│       │   ├── services/
+│       │   │   ├── auth.service.ts
+│       │   │   └── loan.service.ts
+│       │   ├── login/
+│       │   │   ├── login.component.ts
+│       │   │   ├── login.component.html
+│       │   │   └── login.component.scss
+│       │   ├── app.component.ts
+│       │   ├── app.component.html
+│       │   └── app.component.scss
+│       └── environments/
+│           ├── environment.ts
+│           └── environment.development.ts
+├── .github/
+│   └── workflows/
+│       └── ci.yml
 ├── docker-compose.yml
 └── README.md
 ```

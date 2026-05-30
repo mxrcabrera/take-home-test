@@ -15,19 +15,50 @@ namespace Fundo.Applications.WebApi
             {
                 var host = CreateWebHostBuilder(args).Build();
 
-                using (var scope = host.Services.CreateScope())
+                // Retry logic for database connection
+                int maxRetries = 10;
+                int retryDelaySeconds = 5;
+                bool dbInitialized = false;
+
+                for (int retry = 0; retry < maxRetries; retry++)
                 {
-                    var services = scope.ServiceProvider;
                     try
                     {
-                        var context = services.GetRequiredService<LoanDbContext>();
-                        DbInitializer.Initialize(context);
+                        using (var scope = host.Services.CreateScope())
+                        {
+                            var services = scope.ServiceProvider;
+                            var context = services.GetRequiredService<LoanDbContext>();
+                            
+                            // Try to connect to the database
+                            context.Database.CanConnect();
+                            
+                            // If we get here, connection succeeded
+                            DbInitializer.Initialize(context);
+                            dbInitialized = true;
+                            break;
+                        }
                     }
                     catch (Exception ex)
                     {
-                        var logger = services.GetRequiredService<ILogger<Program>>();
-                        logger.LogError(ex, "An error occurred seeding the database.");
+                        var logger = host.Services.GetRequiredService<ILogger<Program>>();
+                        logger.LogWarning(ex, "Database connection attempt {Retry}/{MaxRetries} failed. Retrying in {Delay} seconds...", 
+                            retry + 1, maxRetries, retryDelaySeconds);
+                        
+                        if (retry < maxRetries - 1)
+                        {
+                            System.Threading.Thread.Sleep(retryDelaySeconds * 1000);
+                        }
+                        else
+                        {
+                            logger.LogError(ex, "Failed to connect to database after {MaxRetries} attempts.", maxRetries);
+                            throw;
+                        }
                     }
+                }
+
+                if (!dbInitialized)
+                {
+                    throw new InvalidOperationException("Failed to initialize database after multiple retries.");
                 }
 
                 host.Run();

@@ -1,0 +1,98 @@
+// ─── Typography ───────────────────────────────────────────────────────────────
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  color: var(--text-primary);
+}
+
+p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+strong,
+b {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+a {
+  color: var(--clr-primary);
+  text-decoration: none;
+  transition: opacity var(--ease);
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+// Elegant display titles (Cormorant Garamond)
+.font-display,
+.brand-text,
+.brand__name,
+.hero__title,
+.table-header__title {
+  font-family: var(--font-display);
+  font-feature-settings: 'liga' 1, 'kern' 1;
+}
+
+.brand-text,
+.brand__name {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.hero__title {
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.table-header__title {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+// UI labels & body — Inter, slightly tracked (refined captions)
+.text-ui,
+.hero__subtitle,
+.login-header .subtitle,
+.stat-card__label,
+.table-header__count,
+.hint,
+.form-group label,
+.live-indicator,
+.badge {
+  font-family: var(--font-sans);
+}
+
+.hero__subtitle,
+.login-header .subtitle {
+  letter-spacing: 0.04em;
+  font-weight: 400;
+}
+
+.stat-card__label {
+  letter-spacing: 0.1em;
+}
+
+// Financial figures — Inter tabular for alignment
+.stat-card__value,
+.cell--amount,
+.cell--balance {
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+}

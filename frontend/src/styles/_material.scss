@@ -1,0 +1,64 @@
+// ─── Angular Material 19 (MDC) — Dark Theme Overrides ─────────────────────────
+// These are global overrides applied via Angular Material's M3 design tokens
+// and direct class selectors. Component-level styling lives in the component SCSS.
+
+// M3 token overrides for mat-table
+.mat-mdc-table {
+  --mat-table-background-color:             transparent;
+  --mat-table-header-headline-color:        var(--text-muted);
+  --mat-table-row-item-label-text-color:    var(--text-primary);
+  --mat-table-row-item-outline-color:       var(--border-subtle);
+  --mat-table-header-row-height:            48px;
+  --mat-table-row-item-container-height:    60px;
+
+  width: 100%;
+  border-radius: 0;
+
+  // Header row
+  .mat-mdc-header-row {
+    background: var(--bg-elevated) !important;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .mat-mdc-header-cell {
+    font-size: var(--fs-xs) !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+    color: var(--text-muted) !important;
+    border-bottom: none !important;
+    padding: 0 var(--sp-6) !important;
+  }
+
+  // Data rows
+  .mat-mdc-row {
+    border-bottom: 1px solid var(--border-subtle) !important;
+    transition: background var(--ease) !important;
+    cursor: pointer;
+
+    &:last-child {
+      border-bottom: none !important;
+    }
+
+    &:hover {
+      background: var(--bg-card-hover) !important;
+    }
+  }
+
+  .mat-mdc-cell {
+    color: var(--text-primary) !important;
+    font-size: var(--fs-sm) !important;
+    border-bottom: none !important;
+    padding: 0 var(--sp-6) !important;
+  }
+}
+
+// Ripple — tone down Material's default ripple
+.mat-mdc-row .mat-mdc-focus-indicator {
+  display: none;
+}
+
+// Button token overrides (used in error state)
+.mat-mdc-button {
+  --mdc-text-button-label-text-color: var(--clr-primary);
+}

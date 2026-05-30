@@ -1,3 +1,4 @@
+using BCrypt.Net;
 using Fundo.Applications.WebApi.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -10,6 +11,22 @@ namespace Fundo.Applications.WebApi.Data
         public static void Initialize(LoanDbContext context)
         {
             context.Database.EnsureCreated();
+
+            if (context.Users.Any())
+            {
+                return;
+            }
+
+            var testUser = new User
+            {
+                Username = "admin",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123", workFactor: 12),
+                Email = "admin@loanmanagement.com",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            context.Users.Add(testUser);
+            context.SaveChanges();
 
             if (context.Loans.Any())
             {

@@ -1,3 +1,5 @@
+using System;
+
 namespace Fundo.Applications.WebApi.DTOs
 {
     public class LoanDto

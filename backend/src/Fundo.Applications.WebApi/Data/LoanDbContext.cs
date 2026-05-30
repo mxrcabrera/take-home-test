@@ -10,6 +10,7 @@ namespace Fundo.Applications.WebApi.Data
         }
 
         public DbSet<Loan> Loans { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,6 +23,17 @@ namespace Fundo.Applications.WebApi.Data
                 entity.Property(e => e.CurrentBalance).HasPrecision(18, 2);
                 entity.Property(e => e.ApplicantName).HasMaxLength(200).IsRequired();
                 entity.Property(e => e.Status).HasMaxLength(50).IsRequired();
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            });
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => e.Username).IsUnique();
+                entity.HasIndex(e => e.Email).IsUnique();
+                entity.Property(e => e.Username).HasMaxLength(100).IsRequired();
+                entity.Property(e => e.PasswordHash).HasMaxLength(255).IsRequired();
+                entity.Property(e => e.Email).HasMaxLength(100).IsRequired();
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
             });
         }

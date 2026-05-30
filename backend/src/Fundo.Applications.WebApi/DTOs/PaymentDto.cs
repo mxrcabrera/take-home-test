@@ -4,8 +4,8 @@ namespace Fundo.Applications.WebApi.DTOs
 {
     public class PaymentDto
     {
-        [Required]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Payment amount must be greater than 0")]
+        [Required(ErrorMessage = "Amount is required")]
+        [Range(0.01, 1000000, ErrorMessage = "Payment amount must be between 0.01 and 1,000,000")]
         public decimal Amount { get; set; }
     }
 }
