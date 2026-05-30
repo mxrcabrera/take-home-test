@@ -21,12 +21,12 @@
   }
 
   .mat-mdc-header-cell {
-    font-size: var(--fs-xs) !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.08em !important;
+    font-size: var(--fs-sm) !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.04em !important;
     text-transform: uppercase !important;
-    color: var(--text-muted) !important;
-    border-bottom: none !important;
+    color: var(--text-secondary) !important;
+    border-bottom: 2px solid var(--border-subtle) !important;
     padding: 0 var(--sp-6) !important;
   }
 

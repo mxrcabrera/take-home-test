@@ -41,7 +41,7 @@
   }
 
   &--primary {
-    background: linear-gradient(135deg, var(--clr-primary), var(--clr-cyan));
+    background: linear-gradient(135deg, var(--clr-primary), hsl(271, 91%, 65%));
     color: #fff;
     box-shadow: 0 4px 14px var(--clr-primary-glow);
 
@@ -122,6 +122,15 @@
     .form-control {
       padding-left: 3rem;
     }
+  }
+
+  // When input has both a static icon (left) and an icon-button (right)
+  &:has(.icon-button) > .input-icon:not(.interactive) {
+    left: var(--sp-4);
+  }
+
+  &:has(.icon-button) > .form-control {
+    padding-left: 3rem;
   }
 
   .icon-button {
