@@ -318,6 +318,26 @@
   gap: var(--sp-3);
 }
 
+// ─── Payment Actions ──────────────────────────────────────────────────────────
+
+.payment-container {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+
+  .btn {
+    padding: 4px 12px;
+    font-size: var(--fs-xs);
+    height: 28px;
+    
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      filter: grayscale(0.5);
+    }
+  }
+}
+
 // ─── Avatar ───────────────────────────────────────────────────────────────────
 
 .avatar {

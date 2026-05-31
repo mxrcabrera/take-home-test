@@ -1,6 +1,8 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ViewChild, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { LoanService, Loan } from '../../services/loan.service';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
@@ -18,17 +20,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private readonly loanService = inject(LoanService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
+
+  @ViewChild('paymentDialog') paymentDialog!: TemplateRef<any>;
 
   displayedColumns: string[] = [
     'loanAmount',
     'currentBalance',
     'applicant',
     'status',
+    'actions'
   ];
 
   loans: Loan[] = [];
   isLoading = true;
   error: string | null = null;
+  processingLoanId: number | null = null;
+  paymentAmount: number = 0;
 
   private subscription: Subscription | null = null;
 
@@ -56,9 +64,34 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.isLoading = false;
       },
       error: (err: Error) => {
-        this.error = 'Failed to load loans. Please try again later.';
+        this.error = 'Unable to load loans. Please try again later.';
         this.isLoading = false;
       },
+    });
+  }
+
+  makePayment(loan: Loan): void {
+    const amountStr = prompt(`Balance: ${loan.currentBalance.toFixed(2)}. Insert payment amount:`);
+    if (amountStr === null) return;
+    
+    const amount = Number(amountStr);
+    if (isNaN(amount) || amount <= 0 || amount > loan.currentBalance) {
+      alert('Invalid amount.');
+      return;
+    }
+
+    this.processingLoanId = loan.id;
+
+    this.loanService.makePayment(loan.id, amount).subscribe({
+      next: () => {
+        this.loadLoans();
+        this.processingLoanId = null; 
+        alert('Payment processed successfully.');
+      },
+      error: (err) => {
+        this.processingLoanId = null;
+        alert(err.status === 409 ? 'Data conflict. Please refresh the page.' : 'Payment failed.');
+      }
     });
   }
 

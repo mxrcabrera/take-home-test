@@ -143,6 +143,13 @@ take-home-test/
 └── README.md
 ```
 
+### Technical Decisions
+
+- Input Validation: Added guards in the service layer to prevent negative payment amounts, ensuring financial integrity.
+- Concurrency Control: Implemented optimistic concurrency using `RowVersion`. This prevents two users from updating the same loan balance simultaneously, which is critical for financial transactions.
+- Audit Trail: Intentionally excluded `Delete` functionality. In financial applications, maintaining a complete history of all records is mandatory for audit purposes; therefore, loans are never deleted, only updated.
+- Security: Used BCrypt for password hashing and httpOnly cookies for session management to protect against XSS (Cross-Site Scripting) attacks, which is a more secure approach than storing tokens in LocalStorage.
+
 ### Design Decisions
 
 - Service layer separates business logic from controllers, enabling unit tests with Moq
@@ -154,6 +161,8 @@ take-home-test/
 - Functional guards and interceptors (Angular 15+) avoid class boilerplate
 - Standalone components (Angular 14+) without NgModules
 - Design tokens (_tokens.scss) keep colors, spacing, and typography consistent
+- Optimistic Concurrency Control: Implemented `RowVersion` on the `Loan` entity and handled `DbUpdateConcurrencyException` in the service layer to prevent race conditions during concurrent payment processing.
+- Data Validation: Utilized Entity Framework Core DataAnnotations for model validation directly at the entity level, keeping the API lightweight.
 
 ### Authentication Flow
 
@@ -173,6 +182,7 @@ take-home-test/
 - Dark theme UI with glassmorphism, animations, responsive grid
 - Loading, error, and empty states in the frontend
 - Design system with tokens, typography, component styles
+- Full Loan Lifecycle: End-to-end implementation of loan creation and payment processing, including business rules (preventing payments on already paid loans).
 
 ### Security Considerations
 
@@ -203,10 +213,8 @@ Production Recommendations:
 
 ### What's Not Included (Would Add With More Time)
 
-- FluentValidation for input validation
 - Serilog for structured log output
 - Pagination, filtering, and sorting on GET /loans
-- Frontend forms for creating loans and making payments
 - Angular unit tests for components and services
 - Refresh token mechanism
 - API versioning
