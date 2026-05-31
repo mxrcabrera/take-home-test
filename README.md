@@ -8,7 +8,7 @@ Full-stack loan management app. .NET 8.0 backend with JWT authentication, Angula
 
 ```bash
 # 1. Start backend + database
-docker-compose up
+docker compose up
 
 # 2. In another terminal, start frontend
 cd frontend
@@ -28,7 +28,7 @@ All `/loans` endpoints require JWT Bearer token.
 
 | Method | Path | Description | Auth |
 |--------|------|-------------|------|
-| POST | `/auth/login` | Get JWT token | No |
+| POST | `/auth/login` | Login | No |
 | GET | `/auth/me` | Current user info | Yes |
 | POST | `/loans` | Create a loan | Yes |
 | GET | `/loans` | List all loans | Yes |
@@ -96,7 +96,7 @@ Uses `http://localhost:5000` as API base (configured in `src/environments/`).
 ### Tests
 
 ```bash
-# Backend (17 tests: 10 unit + 7 integration)
+# Backend (18 tests: 10 unit + 8 integration)
 cd backend/src
 dotnet test
 
@@ -126,7 +126,7 @@ take-home-test/
 │   │   └── appsettings.json
 │   └── Fundo.Services.Tests/
 │       ├── Unit/               # 10 unit tests (mocked LoanService)
-│       └── Integration/        # 7 integration tests (WebApplicationFactory + InMemory DB)
+│       └── Integration/        # 8 integration tests (WebApplicationFactory + InMemory DB)
 ├── frontend/src/
 │   ├── app/
 │   │   ├── guards/auth.guard.ts          # Functional guard (CanActivateFn)
