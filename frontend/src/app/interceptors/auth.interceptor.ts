@@ -1,18 +1,44 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+
 import { inject } from '@angular/core';
+
+import { Router } from '@angular/router';
+
+import { catchError, throwError } from 'rxjs';
+
 import { AuthService } from '../services/auth.service';
 
+
+
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
+
   const authService = inject(AuthService);
-  const token = authService.getToken();
 
-  if (token) {
-    req = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
+  const router = inject(Router);
+
+  // MAR CABRERA 06.01.2026 - Use withCredentials to include httpOnly cookies for better security
+  // This prevents XSS attacks since cookies are not accessible via JavaScript
+  req = req.clone({
+    withCredentials: true
+  });
+
+  return next(req).pipe(
+
+    catchError((error: HttpErrorResponse) => {
+
+      if (error.status === 401) {
+
+        authService.logout();
+
+        router.navigate(['/login']);
+
       }
-    });
-  }
 
-  return next(req);
+      return throwError(() => error);
+
+    })
+
+  );
+
 };
+

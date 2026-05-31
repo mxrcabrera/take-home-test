@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Fundo.Applications.WebApi.Constants;
 
 namespace Fundo.Applications.WebApi.Models
 {
@@ -24,10 +25,13 @@ namespace Fundo.Applications.WebApi.Models
 
         [Required]
         [MaxLength(50)]
-        public string Status { get; set; } = "active";
+        public string Status { get; set; } = LoanConstants.StatusActive;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime? UpdatedAt { get; set; }
+
+        [Timestamp]
+        public byte[]? RowVersion { get; set; }
     }
 }

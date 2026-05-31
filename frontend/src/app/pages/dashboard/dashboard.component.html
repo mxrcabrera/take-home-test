@@ -111,7 +111,7 @@
           <ng-container matColumnDef="loanAmount">
             <th mat-header-cell *matHeaderCellDef>Loan Amount</th>
             <td mat-cell *matCellDef="let element" class="cell--amount">
-              {{ element.loanAmount | currency }}
+              {{ element.amount | currency }}
             </td>
           </ng-container>
 
@@ -128,8 +128,8 @@
             <th mat-header-cell *matHeaderCellDef>Applicant</th>
             <td mat-cell *matCellDef="let element">
               <div class="cell-applicant">
-                <div class="avatar" aria-hidden="true">{{ getInitials(element.applicant) }}</div>
-                <span>{{ element.applicant }}</span>
+                <div class="avatar" aria-hidden="true">{{ getInitials(element.applicantName) }}</div>
+                <span>{{ element.applicantName }}</span>
               </div>
             </td>
           </ng-container>

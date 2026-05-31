@@ -4,13 +4,14 @@ using Fundo.Applications.WebApi.DTOs;
 using Fundo.Applications.WebApi.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Fundo.Applications.WebApi.Services
 {
     public class LoanService : ILoanService
     {
+        private const decimal ZeroBalance = 0m;
+
         private readonly LoanDbContext _context;
 
         public LoanService(LoanDbContext context)
@@ -67,12 +68,19 @@ namespace Fundo.Applications.WebApi.Services
             loan.CurrentBalance -= amount;
             loan.UpdatedAt = DateTime.UtcNow;
 
-            if (loan.CurrentBalance == 0)
+            if (loan.CurrentBalance == ZeroBalance)
             {
                 loan.Status = LoanConstants.StatusPaid;
             }
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new InvalidOperationException("The loan was modified by another process. Please try again.");
+            }
 
             return loan;
         }

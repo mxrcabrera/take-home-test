@@ -6,11 +6,13 @@ services:
     container_name: loan-management-db
     environment:
       ACCEPT_EULA: "Y"
-      SA_PASSWORD: "LoanMgmt#2024!Secure"
+      SA_PASSWORD: "${SA_PASSWORD:-LoanMgmt#2024!Secure}"
     ports:
       - "1433:1433"
+    volumes:
+      - sqldata:/var/opt/mssql
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'LoanMgmt#2024!Secure' -Q 'SELECT 1'"]
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P '$$SA_PASSWORD' -Q 'SELECT 1'"]
       interval: 10s
       timeout: 10s
       retries: 15
@@ -36,6 +38,9 @@ services:
       - db
     networks:
       - loan-network
+
+volumes:
+  sqldata:
 
 networks:
   loan-network:

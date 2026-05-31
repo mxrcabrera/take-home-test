@@ -1,4 +1,5 @@
 using BCrypt.Net;
+using Fundo.Applications.WebApi.Constants;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -210,7 +211,7 @@ namespace Fundo.Services.Tests.Integration
             var updatedLoan = await paymentResponse.Content.ReadFromJsonAsync<LoanDto>();
             Assert.NotNull(updatedLoan);
             Assert.Equal(0m, updatedLoan.CurrentBalance);
-            Assert.Equal("paid", updatedLoan.Status);
+            Assert.Equal(LoanConstants.StatusPaid, updatedLoan.Status);
         }
     }
 }

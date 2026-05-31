@@ -19,7 +19,7 @@ namespace Fundo.Applications.WebApi.Models
         public string PasswordHash { get; set; } = string.Empty;
 
         [Required]
-        [MaxLength(100)]
+        [MaxLength(255)]
         public string Email { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

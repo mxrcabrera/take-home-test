@@ -1,18 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideRouter, Router } from '@angular/router';
 import { DashboardComponent } from './dashboard.component';
 import { of, throwError } from 'rxjs';
 import { LoanService } from '../../services/loan.service';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
   let fixture: ComponentFixture<DashboardComponent>;
   let loanService: jasmine.SpyObj<LoanService>;
   let authService: jasmine.SpyObj<AuthService>;
-  let router: Router;
 
   const mockLoans = [
     { id: 1, amount: 25000, currentBalance: 18750, applicantName: 'John Doe', status: 'active', createdAt: '2024-01-15' },
@@ -22,11 +20,13 @@ describe('DashboardComponent', () => {
 
   beforeEach(async () => {
     loanService = jasmine.createSpyObj('LoanService', ['getLoans']);
-    authService = jasmine.createSpyObj('AuthService', ['logout', 'getToken']);
+    authService = jasmine.createSpyObj('AuthService', ['logout']);
 
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule, DashboardComponent],
+      imports: [DashboardComponent],
       providers: [
+        provideHttpClient(),
+        provideRouter([]),
         { provide: LoanService, useValue: loanService },
         { provide: AuthService, useValue: authService },
       ],
@@ -34,7 +34,6 @@ describe('DashboardComponent', () => {
 
     fixture = TestBed.createComponent(DashboardComponent);
     component = fixture.componentInstance;
-    router = TestBed.inject(Router);
   });
 
   it('should load loans on init', () => {
@@ -103,6 +102,7 @@ describe('DashboardComponent', () => {
   });
 
   it('logout calls authService.logout and navigates to login', () => {
+    const router = TestBed.inject(Router);
     spyOn(router, 'navigate');
     component.logout();
     expect(authService.logout).toHaveBeenCalled();

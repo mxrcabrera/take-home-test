@@ -145,25 +145,25 @@ take-home-test/
 
 ### Design Decisions
 
-- **Service layer** separates business logic from controllers, enabling unit tests with Moq
-- **DTOs** decouple API contracts from entity models
-- **AsNoTracking()** on read queries reduces EF Core overhead
-- **BCrypt (work factor 12)** for password hashing, not plaintext
-- **Multi-stage Dockerfile** keeps the final image minimal (runtime only)
-- **Healthcheck in docker-compose** ensures the API waits for SQL Server before starting
-- **Functional guards and interceptors** (Angular 15+) avoid class boilerplate
-- **Standalone components** (Angular 14+) without NgModules
-- **Design tokens** (`_tokens.scss`) keep colors, spacing, and typography consistent
+- Service layer separates business logic from controllers, enabling unit tests with Moq
+- DTOs decouple API contracts from entity models
+- AsNoTracking() on read queries reduces EF Core overhead
+- BCrypt (work factor 12) for password hashing, not plaintext
+- Multi-stage Dockerfile keeps the final image minimal (runtime only)
+- Healthcheck in docker-compose ensures the API waits for SQL Server before starting
+- Functional guards and interceptors (Angular 15+) avoid class boilerplate
+- Standalone components (Angular 14+) without NgModules
+- Design tokens (_tokens.scss) keep colors, spacing, and typography consistent
 
 ### Authentication Flow
 
 1. User logs in at `/login` with username + password
-2. Backend validates credentials (BCrypt), returns JWT (8h expiry)
-3. Frontend stores token in `localStorage`
-4. `authInterceptor` attaches `Authorization: Bearer <token>` to every HTTP request
+2. Backend validates credentials (BCrypt), returns JWT (8h expiry) in httpOnly cookie
+3. Frontend uses httpOnly cookies for token storage (XSS protection)
+4. `authInterceptor` uses `withCredentials: true` to include cookies in HTTP requests
 5. `authGuard` prevents access to `/dashboard` without a valid token
 6. Backend `[Authorize]` attribute secures all `/loans` endpoints
-7. Logout clears the token and redirects to `/login`
+7. Logout clears the cookie and redirects to `/login`
 
 ### What's Included (Beyond Requirements)
 
@@ -173,6 +173,33 @@ take-home-test/
 - Dark theme UI with glassmorphism, animations, responsive grid
 - Loading, error, and empty states in the frontend
 - Design system with tokens, typography, component styles
+
+### Security Considerations
+
+Note: This is a take-home test/challenge implementation. For production deployment, the following security measures should be implemented:
+
+Hardcoded Values (Development Only):
+- Connection string, JWT key, and admin credentials are currently hardcoded in appsettings.json and DbInitializer.cs
+- In production, these should be loaded from environment variables or a secret management system (Azure Key Vault, AWS Secrets Manager, etc.)
+- See security comments in the code marked with MAR CABRERA 06.01.2026 - for detailed explanations
+
+Security Features Implemented:
+- httpOnly cookies for JWT token storage (prevents XSS attacks)
+- Rate limiting on login endpoint (prevents brute force attacks)
+- BCrypt with work factor 12 for password hashing
+- HSTS enabled for HTTPS enforcement
+- CORS configured for specific origins
+- Concurrency control with RowVersion to prevent race conditions
+- Optimistic concurrency handling in loan payments
+
+Production Recommendations:
+- Use environment variables for all sensitive configuration
+- Implement secret rotation policies
+- Add API rate limiting globally
+- Implement refresh token mechanism
+- Add input sanitization and output encoding
+- Enable security headers (CSP, X-Frame-Options, etc.)
+- Implement audit logging for sensitive operations
 
 ### What's Not Included (Would Add With More Time)
 

@@ -1,5 +1,4 @@
-﻿using Fundo.Applications.WebApi.Constants;
-using Fundo.Applications.WebApi.DTOs;
+﻿using Fundo.Applications.WebApi.DTOs;
 using Fundo.Applications.WebApi.Models;
 using Fundo.Applications.WebApi.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -58,7 +57,7 @@ namespace Fundo.Applications.WebApi.Controllers
                 var loan = await _loanService.CreateLoanAsync(createLoanDto);
                 return CreatedAtAction(nameof(GetLoan), new { id = loan.Id }, MapToDto(loan));
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
                 return BadRequest(ex.Message);
             }

@@ -15,6 +15,8 @@ namespace Fundo.Applications.WebApi.Services
 {
     public class AuthService : IAuthService
     {
+        private const int TokenExpirationHours = 8;
+
         private readonly LoanDbContext _context;
         private readonly IConfiguration _configuration;
 
@@ -68,7 +70,7 @@ namespace Fundo.Applications.WebApi.Services
                 issuer: issuer,
                 audience: audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(8),
+                expires: DateTime.UtcNow.AddHours(TokenExpirationHours),
                 signingCredentials: credentials
             );
 

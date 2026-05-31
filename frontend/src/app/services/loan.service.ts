@@ -17,34 +17,35 @@ export interface Loan {
   providedIn: 'root',
 })
 export class LoanService {
-  private apiUrl = environment.apiUrl;
+  private readonly apiBase = environment.apiBase;
 
   constructor(private http: HttpClient) {}
 
   private handleError(error: any): Observable<never> {
+    console.error('[LoanService] API error:', error);
     return throwError(() => error);
   }
 
   getLoans(): Observable<Loan[]> {
-    return this.http.get<Loan[]>(this.apiUrl).pipe(
+    return this.http.get<Loan[]>(`${this.apiBase}/loans`).pipe(
       catchError(this.handleError)
     );
   }
 
   getLoan(id: number): Observable<Loan> {
-    return this.http.get<Loan>(`${this.apiUrl}/${id}`).pipe(
+    return this.http.get<Loan>(`${this.apiBase}/loans/${id}`).pipe(
       catchError(this.handleError)
     );
   }
 
   createLoan(loan: { amount: number; applicantName: string }): Observable<Loan> {
-    return this.http.post<Loan>(this.apiUrl, loan).pipe(
+    return this.http.post<Loan>(`${this.apiBase}/loans`, loan).pipe(
       catchError(this.handleError)
     );
   }
 
   makePayment(id: number, amount: number): Observable<Loan> {
-    return this.http.post<Loan>(`${this.apiUrl}/${id}/payment`, { amount }).pipe(
+    return this.http.post<Loan>(`${this.apiBase}/loans/${id}/payment`, { amount }).pipe(
       catchError(this.handleError)
     );
   }

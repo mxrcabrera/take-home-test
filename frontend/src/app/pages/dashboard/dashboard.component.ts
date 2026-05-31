@@ -1,17 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
-import { LoanService } from '../../services/loan.service';
+import { LoanService, Loan } from '../../services/loan.service';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-
-interface LoanDisplay {
-  loanAmount: number;
-  currentBalance: number;
-  applicant: string;
-  status: string;
-}
+import { LoanConstants } from '../../constants/loan.constants';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,6 +15,10 @@ interface LoanDisplay {
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit, OnDestroy {
+  private readonly loanService = inject(LoanService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
   displayedColumns: string[] = [
     'loanAmount',
     'currentBalance',
@@ -28,17 +26,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
     'status',
   ];
 
-  loans: LoanDisplay[] = [];
+  loans: Loan[] = [];
   isLoading = true;
   error: string | null = null;
 
   private subscription: Subscription | null = null;
 
-  constructor(
-    private loanService: LoanService,
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  constructor() {}
 
   logout(): void {
     this.authService.logout();
@@ -57,16 +51,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.error = null;
     this.subscription = this.loanService.getLoans().subscribe({
-      next: (data: any[]) => {
-        this.loans = data.map((loan: any) => ({
-          loanAmount: loan.amount,
-          currentBalance: loan.currentBalance,
-          applicant: loan.applicantName,
-          status: loan.status,
-        }));
+      next: (data: Loan[]) => {
+        this.loans = data;
         this.isLoading = false;
       },
-      error: () => {
+      error: (err: Error) => {
         this.error = 'Failed to load loans. Please try again later.';
         this.isLoading = false;
       },
@@ -76,7 +65,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // ── Computed stats ─────────────────────────────────────────────────────────
 
   get totalAmount(): number {
-    return this.loans.reduce((sum, l) => sum + l.loanAmount, 0);
+    return this.loans.reduce((sum, l) => sum + l.amount, 0);
   }
 
   get totalBalance(): number {
@@ -85,22 +74,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   get activeCount(): number {
     return this.loans.filter((l) =>
-      ['active', 'approved'].includes(l.status?.toLowerCase())
+      [LoanConstants.StatusActive, LoanConstants.StatusApproved].includes(l.status?.toLowerCase())
     ).length;
   }
 
   // ── Status badge helper ────────────────────────────────────────────────────
 
-  getStatusClass(status: string): string {
+  getStatusClass(status?: string): string {
     const s = (status ?? '').toLowerCase();
-    if (['active', 'approved'].includes(s)) return 'badge--success';
-    if (['pending', 'review', 'processing'].includes(s)) return 'badge--warning';
-    if (['defaulted', 'overdue', 'rejected'].includes(s)) return 'badge--danger';
+    if ([LoanConstants.StatusActive, LoanConstants.StatusApproved].includes(s)) return 'badge--success';
+    if ([LoanConstants.StatusPending, LoanConstants.StatusReview, LoanConstants.StatusProcessing].includes(s)) return 'badge--warning';
+    if ([LoanConstants.StatusDefaulted, LoanConstants.StatusOverdue, LoanConstants.StatusRejected].includes(s)) return 'badge--danger';
     return 'badge--neutral';
   }
 
-  getInitials(name: string): string {
-    return (name ?? '?')
+  getInitials(name?: string): string {
+    const safeName = name || '?';
+    return safeName
       .split(' ')
       .map((n) => n[0])
       .join('')

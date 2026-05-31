@@ -1,3 +1,4 @@
+using Fundo.Applications.WebApi.Constants;
 using Fundo.Applications.WebApi.Controllers;
 using Fundo.Applications.WebApi.DTOs;
 using Fundo.Applications.WebApi.Models;
@@ -45,7 +46,7 @@ namespace Fundo.Services.Tests.Unit
                 Amount = 10000m,
                 CurrentBalance = 5000m,
                 ApplicantName = "Test Applicant",
-                Status = "active",
+                Status = LoanConstants.StatusActive,
                 CreatedAt = DateTime.UtcNow
             };
             _loanServiceMock.Setup(x => x.GetAllLoansAsync()).ReturnsAsync(new[] { loan });
@@ -78,7 +79,7 @@ namespace Fundo.Services.Tests.Unit
                 Amount = 10000m,
                 CurrentBalance = 5000m,
                 ApplicantName = "Test Applicant",
-                Status = "active",
+                Status = LoanConstants.StatusActive,
                 CreatedAt = DateTime.UtcNow
             };
             _loanServiceMock.Setup(x => x.GetLoanByIdAsync(1)).ReturnsAsync(loan);
@@ -106,7 +107,7 @@ namespace Fundo.Services.Tests.Unit
                 Amount = 15000m,
                 CurrentBalance = 15000m,
                 ApplicantName = "New Applicant",
-                Status = "active",
+                Status = LoanConstants.StatusActive,
                 CreatedAt = DateTime.UtcNow
             };
             _loanServiceMock.Setup(x => x.CreateLoanAsync(createLoanDto)).ReturnsAsync(createdLoan);
@@ -119,7 +120,7 @@ namespace Fundo.Services.Tests.Unit
             Assert.Equal("New Applicant", loanDto.ApplicantName);
             Assert.Equal(15000m, loanDto.Amount);
             Assert.Equal(15000m, loanDto.CurrentBalance);
-            Assert.Equal("active", loanDto.Status);
+            Assert.Equal(LoanConstants.StatusActive, loanDto.Status);
         }
 
         [Fact]
@@ -183,7 +184,7 @@ namespace Fundo.Services.Tests.Unit
                 Amount = 10000m,
                 CurrentBalance = 3000m,
                 ApplicantName = "Test Applicant",
-                Status = "active",
+                Status = LoanConstants.StatusActive,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
@@ -195,7 +196,7 @@ namespace Fundo.Services.Tests.Unit
             var okResult = Assert.IsType<Microsoft.AspNetCore.Mvc.OkObjectResult>(result.Result);
             var loanDto = Assert.IsType<LoanDto>(okResult.Value);
             Assert.Equal(3000m, loanDto.CurrentBalance);
-            Assert.Equal("active", loanDto.Status);
+            Assert.Equal(LoanConstants.StatusActive, loanDto.Status);
             Assert.NotNull(loanDto.UpdatedAt);
         }
 
@@ -209,7 +210,7 @@ namespace Fundo.Services.Tests.Unit
                 Amount = 10000m,
                 CurrentBalance = 0m,
                 ApplicantName = "Test Applicant",
-                Status = "paid",
+                Status = LoanConstants.StatusPaid,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
@@ -221,7 +222,7 @@ namespace Fundo.Services.Tests.Unit
             var okResult = Assert.IsType<Microsoft.AspNetCore.Mvc.OkObjectResult>(result.Result);
             var loanDto = Assert.IsType<LoanDto>(okResult.Value);
             Assert.Equal(0m, loanDto.CurrentBalance);
-            Assert.Equal("paid", loanDto.Status);
+            Assert.Equal(LoanConstants.StatusPaid, loanDto.Status);
         }
     }
 }

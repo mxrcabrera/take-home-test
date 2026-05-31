@@ -1,4 +1,5 @@
 using BCrypt.Net;
+using Fundo.Applications.WebApi.Constants;
 using Fundo.Applications.WebApi.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -8,6 +9,8 @@ namespace Fundo.Applications.WebApi.Data
 {
     public static class DbInitializer
     {
+        private const int BcryptWorkFactor = 12;
+
         public static void Initialize(LoanDbContext context)
         {
             context.Database.EnsureCreated();
@@ -17,11 +20,21 @@ namespace Fundo.Applications.WebApi.Data
                 return;
             }
 
+            // SECURITY NOTE: Default admin credentials for development/testing only
+            // In production, admin credentials should be:
+            // - Created via secure admin setup process
+            // - Loaded from environment variables
+            // - Never hardcoded in source control
+            // Consider implementing a first-run setup wizard for production
+            var adminUsername = Environment.GetEnvironmentVariable("ADMIN_USERNAME") ?? "admin";
+            var adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD") ?? "admin123";
+            var adminEmail = Environment.GetEnvironmentVariable("ADMIN_EMAIL") ?? "admin@loanmanagement.com";
+
             var testUser = new User
             {
-                Username = "admin",
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123", workFactor: 12),
-                Email = "admin@loanmanagement.com",
+                Username = adminUsername,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(adminPassword, workFactor: BcryptWorkFactor),
+                Email = adminEmail,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -40,7 +53,7 @@ namespace Fundo.Applications.WebApi.Data
                     Amount = 25000.00m,
                     CurrentBalance = 18750.00m,
                     ApplicantName = "John Doe",
-                    Status = "active",
+                    Status = LoanConstants.StatusActive,
                     CreatedAt = DateTime.UtcNow.AddDays(-30)
                 },
                 new Loan
@@ -48,7 +61,7 @@ namespace Fundo.Applications.WebApi.Data
                     Amount = 15000.00m,
                     CurrentBalance = 0.00m,
                     ApplicantName = "Jane Smith",
-                    Status = "paid",
+                    Status = LoanConstants.StatusPaid,
                     CreatedAt = DateTime.UtcNow.AddDays(-60)
                 },
                 new Loan
@@ -56,7 +69,7 @@ namespace Fundo.Applications.WebApi.Data
                     Amount = 50000.00m,
                     CurrentBalance = 32500.00m,
                     ApplicantName = "Robert Johnson",
-                    Status = "active",
+                    Status = LoanConstants.StatusActive,
                     CreatedAt = DateTime.UtcNow.AddDays(-45)
                 },
                 new Loan
@@ -64,7 +77,7 @@ namespace Fundo.Applications.WebApi.Data
                     Amount = 10000.00m,
                     CurrentBalance = 0.00m,
                     ApplicantName = "Emily Williams",
-                    Status = "paid",
+                    Status = LoanConstants.StatusPaid,
                     CreatedAt = DateTime.UtcNow.AddDays(-90)
                 },
                 new Loan
@@ -72,7 +85,7 @@ namespace Fundo.Applications.WebApi.Data
                     Amount = 75000.00m,
                     CurrentBalance = 72000.00m,
                     ApplicantName = "Michael Brown",
-                    Status = "active",
+                    Status = LoanConstants.StatusActive,
                     CreatedAt = DateTime.UtcNow.AddDays(-15)
                 }
             };

@@ -4,15 +4,21 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System;
 using System.Text;
+using System.Threading.RateLimiting;
 using System.Threading.Tasks;
 
+// NOTE: This Startup.cs file uses the legacy configuration pattern.
+// In .NET 6+, the recommended approach is the minimal hosting pattern (WebApplication.CreateBuilder) which consolidates Program.cs and Startup.cs.
+// See Program.cs for more details on why the legacy pattern is used in this project.
 namespace Fundo.Applications.WebApi
 {
     public class Startup
@@ -34,6 +40,9 @@ namespace Fundo.Applications.WebApi
             services.AddScoped<ILoanService, LoanService>();
             services.AddScoped<IAuthService, AuthService>();
 
+            // SECURITY NOTE: JWT configuration loaded from appsettings.json
+            // In production, these should come from environment variables or secret management
+            // Hardcoded secrets in appsettings.json are a security risk and should never be committed
             var jwtKey = Configuration["Jwt:Key"];
             var jwtIssuer = Configuration["Jwt:Issuer"];
             var jwtAudience = Configuration["Jwt:Audience"];
@@ -75,38 +84,53 @@ namespace Fundo.Applications.WebApi
                 services.AddAuthorization();
             }
 
+            services.AddRateLimiter(options =>
+            {
+                options.AddPolicy("LoginPolicy", context =>
+                    RateLimitPartition.GetSlidingWindowLimiter(
+                        partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+                        factory: _ => new SlidingWindowRateLimiterOptions
+                        {
+                            PermitLimit = 5,
+                            Window = TimeSpan.FromMinutes(1),
+                            SegmentsPerWindow = 2,
+                            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                            QueueLimit = 2
+                        }));
+            });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Loan Management API", Version = "v1" });
                 
-                if (!string.IsNullOrEmpty(jwtKey))
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                    {
-                        Description = "JWT Authorization header using the Bearer scheme",
-                        Name = "Authorization",
-                        In = ParameterLocation.Header,
-                        Type = SecuritySchemeType.ApiKey,
-                        Scheme = "Bearer"
-                    });
+                    Description = "JWT Authorization header using the Bearer scheme",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
 
-                    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
                     {
+                        new OpenApiSecurityScheme
                         {
-                            new OpenApiSecurityScheme
+                            Reference = new OpenApiReference
                             {
-                                Reference = new OpenApiReference
-                                {
-                                    Type = ReferenceType.SecurityScheme,
-                                    Id = "Bearer"
-                                }
-                            },
-                            new string[] {}
-                        }
-                    });
-                }
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
             });
 
+            // CORS configuration for development
+            // In production, origins should be configured via environment variables
+            // and restricted to specific domains, not AllowAnyMethod/AllowAnyHeader
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll", builder =>
@@ -132,16 +156,12 @@ namespace Fundo.Applications.WebApi
             }
 
             app.UseHttpsRedirection();
+            app.UseHsts();
             app.UseCors("AllowAll");
             app.UseRouting();
-
-            var jwtKey = Configuration["Jwt:Key"];
-            if (!string.IsNullOrEmpty(jwtKey))
-            {
-                app.UseAuthentication();
-                app.UseAuthorization();
-            }
-
+            app.UseRateLimiter();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
         }
     }

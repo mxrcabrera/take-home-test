@@ -24,6 +24,7 @@ namespace Fundo.Applications.WebApi.Data
                 entity.Property(e => e.ApplicantName).HasMaxLength(200).IsRequired();
                 entity.Property(e => e.Status).HasMaxLength(50).IsRequired();
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+                entity.HasIndex(e => e.Status);
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -33,7 +34,7 @@ namespace Fundo.Applications.WebApi.Data
                 entity.HasIndex(e => e.Email).IsUnique();
                 entity.Property(e => e.Username).HasMaxLength(100).IsRequired();
                 entity.Property(e => e.PasswordHash).HasMaxLength(255).IsRequired();
-                entity.Property(e => e.Email).HasMaxLength(100).IsRequired();
+                entity.Property(e => e.Email).HasMaxLength(255).IsRequired();
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
             });
         }
