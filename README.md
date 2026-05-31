@@ -1,304 +1,217 @@
 # Loan Management System
 
-A full-stack Loan Management System built with .NET Core (C#) backend and Angular frontend.
+Full-stack loan management app. .NET 8.0 backend with JWT authentication, Angular 19 frontend, SQL Server, Docker.
 
-## Overview
+---
 
-This application provides a RESTful API for managing loan applications and a simple Angular frontend to display loan information. The system includes:
+## Quick Start
 
-- **Backend**: .NET 6.0 Web API with Entity Framework Core and SQL Server
-- **Frontend**: Angular 19 with Material Design
-- **Database**: SQL Server with seed data
-- **Testing**: Unit and integration tests using xUnit
-- **DevOps**: Docker and Docker Compose for containerization
-
-## Features
-
-### Backend API Endpoints
-
-- `POST /api/auth/login` - Login and get JWT token
-- `POST /loans` - Create a new loan (requires authentication)
-- `GET /loans` - List all loans (requires authentication)
-- `GET /loans/{id}` - Retrieve loan details by ID (requires authentication)
-- `POST /loans/{id}/payment` - Make a payment on a loan (requires authentication)
-
-### Frontend
-
-- Display list of loans in a table format
-- Real-time data fetching from backend API
-- Loading and error states
-- Responsive design
-- JWT authentication with login functionality
-
-## Setup Instructions
-
-### Prerequisites
-
-- .NET 6.0 SDK
-- Node.js (v18 or higher)
-- Docker and Docker Compose (optional, for containerized deployment)
-- SQL Server (if not using Docker)
-
-### Backend Setup
-
-1. Navigate to the backend directory:
 ```bash
-cd backend/src
-```
+# 1. Start backend + database
+docker-compose up
 
-2. Restore NuGet packages:
-```bash
-dotnet restore
-```
-
-3. Update the connection string in `Fundo.Applications.WebApi/appsettings.json`:
-```json
-"ConnectionStrings": {
-  "DefaultConnection": "Server=localhost,1433;Database=LoanManagementDb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;"
-}
-```
-
-4. Run the API:
-```bash
-cd Fundo.Applications.WebApi
-dotnet run
-```
-
-The API will be available at `http://localhost:5000` with Swagger UI at `http://localhost:5000/swagger`.
-
-### Frontend Setup
-
-1. Navigate to the frontend directory:
-```bash
+# 2. In another terminal, start frontend
 cd frontend
-```
-
-2. Install dependencies:
-```bash
 npm install
-```
-
-3. Start the Angular development server:
-```bash
 npm start
 ```
 
-The frontend will be available at `http://localhost:4200`.
+Backend → http://localhost:5000/swagger  
+Frontend → http://localhost:4200  
+Login → `admin` / `admin123`
 
-### Running with Docker Compose
+---
 
-1. From the root directory, run:
-```bash
-docker-compose up
+## API Endpoints
+
+All `/loans` endpoints require JWT Bearer token.
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| POST | `/auth/login` | Get JWT token | No |
+| GET | `/auth/me` | Current user info | Yes |
+| POST | `/loans` | Create a loan | Yes |
+| GET | `/loans` | List all loans | Yes |
+| GET | `/loans/{id}` | Loan details | Yes |
+| POST | `/loans/{id}/payment` | Make a payment | Yes |
+
+### Request / Response examples
+
 ```
-
-This will start both the SQL Server database and the .NET API in containers.
-
-### Running Tests
-
-#### Backend Tests
-
-1. Navigate to the backend test directory:
-```bash
-cd backend/src/Fundo.Services.Tests
-```
-
-2. Run tests:
-```bash
-dotnet test
-```
-
-#### Frontend Tests
-
-```bash
-cd frontend
-npm test
-```
-
-## Authentication
-
-The application uses JWT (JSON Web Token) authentication for securing API endpoints.
-
-### Default Credentials
-
-- **Username**: `admin`
-- **Password**: `admin123`
-
-### How It Works
-
-1. **Login**: Users authenticate by sending their credentials to `POST /api/auth/login`
-2. **Token Generation**: The backend validates credentials and returns a JWT token
-3. **Token Storage**: The frontend stores the token in localStorage
-4. **Token Usage**: All subsequent API requests include the token in the `Authorization` header as `Bearer {token}`
-5. **Token Validation**: The backend validates the token on each protected endpoint
-6. **Token Expiration**: Tokens expire after 8 hours
-
-### Protected Endpoints
-
-All loan management endpoints (`/loans`) require authentication:
-- `POST /loans` - Create a new loan
-- `GET /loans` - List all loans
-- `GET /loans/{id}` - Retrieve loan details
-- `POST /loans/{id}/payment` - Make a payment
-
-### Frontend Authentication Flow
-
-1. User enters credentials in the login form
-2. Frontend calls `/api/auth/login` endpoint
-3. On successful login, token is stored in localStorage
-4. All API calls include the JWT token in headers
-5. User can logout to clear the token
-
-## API Documentation
-
-Once the backend is running, access the Swagger UI at `http://localhost:5000/swagger` for interactive API documentation. Note that protected endpoints require authentication via the "Authorize" button in Swagger.
-
-### Loan Model
-
-```json
-{
-  "id": 1,
-  "amount": 25000.00,
-  "currentBalance": 18750.00,
-  "applicantName": "John Doe",
-  "status": "active",
-  "createdAt": "2024-01-15T10:30:00Z",
-  "updatedAt": null
-}
-```
-
-### Create Loan Request
-
-```json
+POST /loans
 {
   "amount": 15000.00,
   "applicantName": "Jane Smith"
 }
 ```
 
-### Payment Request
-
-```json
+```
+POST /loans/1/payment
 {
   "amount": 5000.00
 }
 ```
 
-## Implementation Approach
+```
+GET /loans → 200
+[
+  {
+    "id": 1,
+    "amount": 25000.00,
+    "currentBalance": 18750.00,
+    "applicantName": "John Doe",
+    "status": "active",
+    "createdAt": "2024-01-15T10:30:00Z",
+    "updatedAt": null
+  }
+]
+```
 
-### Architecture
+Loan statuses: `active` | `paid`. A loan becomes `paid` when `currentBalance` reaches 0.
 
-- **Clean Architecture**: Separation of concerns with Models, DTOs, and Controllers
-- **Repository Pattern**: DbContext for data access
-- **Dependency Injection**: Services injected through constructor
-- **DTOs**: Separate data transfer objects for API contracts
+---
 
-### Key Decisions
+## Manual Setup
 
-1. **Entity Framework Core**: Chosen for its robust ORM capabilities and SQL Server integration
-2. **xUnit**: Selected for testing due to its simplicity and wide adoption in .NET ecosystem
-3. **Angular Material**: Used for UI components to provide a consistent, professional look
-4. **Swagger**: Included for API documentation and testing
-5. **Docker**: Containerization for easy deployment and environment consistency
+### Backend
 
-### Challenges Faced
+```bash
+cd backend/src/Fundo.Applications.WebApi
+dotnet restore
+dotnet run
+```
 
-1. **Initial Project Structure**: Had to reorganize the existing structure to follow clean architecture principles
-2. **Database Seeding**: Implemented a custom DbInitializer to populate seed data on startup
-3. **CORS Configuration**: Added CORS policy to allow frontend-backend communication
-4. **Angular Service Integration**: Created a service layer to handle HTTP requests with proper error handling
+Needs SQL Server on localhost:1433. The connection string is in `appsettings.json`.
 
-### Features Implemented
+### Frontend
 
-✅ All required API endpoints (POST /loans, GET /loans, GET /loans/{id}, POST /loans/{id}/payment)
-✅ Entity Framework Core with SQL Server
-✅ Seed data for initial loans
-✅ Unit tests for API endpoints
-✅ Integration tests for API with business logic validation
-✅ Docker and Docker Compose configuration with healthcheck
-✅ Angular frontend with Material Design table
-✅ Real-time data fetching from API
-✅ Loading and error states in frontend
-✅ Swagger API documentation
-✅ GitHub Actions CI/CD pipeline for automated testing
-✅ JWT authentication and authorization (Bonus)
-✅ Service layer for clean architecture (Audit improvement)
-✅ AsNoTracking for query optimization (Audit improvement)
-✅ Environment-based configuration for frontend (Audit improvement)
-✅ Observable subscription management (Audit improvement)
-✅ Global error handling without StackTrace exposure (Audit improvement)
+```bash
+cd frontend
+npm install
+npm start
+```
 
-### Potential Improvements
+Uses `http://localhost:5000` as API base (configured in `src/environments/`).
 
-Given more time, the following improvements could be made:
+### Tests
 
-1. **Validation**: Add more comprehensive input validation with FluentValidation
-2. **Logging**: Implement structured logging with Serilog
-3. **Pagination**: Add pagination support for the loans list endpoint
-4. **Filtering and Sorting**: Add filtering and sorting capabilities to the API
-5. **Frontend Forms**: Add forms for creating loans and making payments
-6. **Password Hashing**: Implement proper password hashing (BCrypt) instead of plain text
-7. **API Versioning**: Implement API versioning for future compatibility
-8. **Unit Tests for Frontend**: Add unit tests for Angular components and services
-9. **Refresh Tokens**: Implement refresh token mechanism for better security
+```bash
+# Backend (17 tests: 10 unit + 7 integration)
+cd backend/src
+dotnet test
 
-## Project Structure
+# Frontend
+cd frontend
+npm test
+```
+
+The integration tests use an in-memory database and do not require a real SQL Server.
+
+---
+
+## Architecture
 
 ```
 take-home-test/
-├── backend/
-│   └── src/
-│       ├── Fundo.Applications.WebApi/
-│       │   ├── Controllers/
-│       │   │   ├── AuthController.cs
-│       │   │   └── LoanManagementController.cs
-│       │   ├── Data/
-│       │   │   ├── DbInitializer.cs
-│       │   │   └── LoanDbContext.cs
-│       │   ├── DTOs/
-│       │   │   ├── CreateLoanDto.cs
-│       │   │   ├── LoanDto.cs
-│       │   │   ├── LoginDto.cs
-│       │   │   └── PaymentDto.cs
-│       │   ├── Models/
-│       │   │   ├── Loan.cs
-│       │   │   └── User.cs
-│       │   ├── Services/
-│       │   │   ├── IAuthService.cs
-│       │   │   ├── AuthService.cs
-│       │   │   ├── ILoanService.cs
-│       │   │   └── LoanService.cs
-│       │   ├── Constants/
-│       │   │   └── LoanConstants.cs
-│       │   ├── Program.cs
-│       │   ├── Startup.cs
-│       │   └── appsettings.json
-│       └── Fundo.Services.Tests/
-│           ├── Integration/
-│           └── Unit/
-├── frontend/
-│   └── src/
-│       ├── app/
-│       │   ├── services/
-│       │   │   ├── auth.service.ts
-│       │   │   └── loan.service.ts
-│       │   ├── login/
-│       │   │   ├── login.component.ts
-│       │   │   ├── login.component.html
-│       │   │   └── login.component.scss
-│       │   ├── app.component.ts
-│       │   ├── app.component.html
-│       │   └── app.component.scss
-│       └── environments/
-│           ├── environment.ts
-│           └── environment.development.ts
-├── .github/
-│   └── workflows/
-│       └── ci.yml
-├── docker-compose.yml
+├── backend/src/
+│   ├── Fundo.Applications.WebApi/
+│   │   ├── Controllers/        # AuthController, LoanManagementController
+│   │   ├── Services/           # IAuthService, AuthService, ILoanService, LoanService
+│   │   ├── Data/               # LoanDbContext, DbInitializer
+│   │   ├── Models/             # Loan, User
+│   │   ├── DTOs/               # CreateLoanDto, LoanDto, LoginDto, PaymentDto
+│   │   ├── Constants/          # LoanConstants (status strings, error messages)
+│   │   ├── Program.cs          # Host builder + global error handler
+│   │   ├── Startup.cs          # DI, JWT, CORS, Swagger config
+│   │   └── appsettings.json
+│   └── Fundo.Services.Tests/
+│       ├── Unit/               # 10 unit tests (mocked LoanService)
+│       └── Integration/        # 7 integration tests (WebApplicationFactory + InMemory DB)
+├── frontend/src/
+│   ├── app/
+│   │   ├── guards/auth.guard.ts          # Functional guard (CanActivateFn)
+│   │   ├── interceptors/auth.interceptor  # Functional interceptor (HttpInterceptorFn)
+│   │   ├── pages/login/                   # Login form with validation
+│   │   ├── pages/dashboard/               # Loan table + stats grid
+│   │   ├── services/                      # AuthService, LoanService
+│   │   ├── app.config.ts                  # HttpClient + interceptors
+│   │   └── app.routes.ts                  # Routes with authGuard
+│   ├── styles/                            # Design system (5 partials)
+│   └── environments/                      # API base URL per environment
+├── .github/workflows/ci.yml               # GitHub Actions (dotnet build + test)
+├── docker-compose.yml                     # SQL Server 2022 + API
 └── README.md
 ```
 
-## Contact
+### Design Decisions
 
-For questions or issues, please refer to the original take-home test instructions.
+- **Service layer** separates business logic from controllers, enabling unit tests with Moq
+- **DTOs** decouple API contracts from entity models
+- **AsNoTracking()** on read queries reduces EF Core overhead
+- **BCrypt (work factor 12)** for password hashing, not plaintext
+- **Multi-stage Dockerfile** keeps the final image minimal (runtime only)
+- **Healthcheck in docker-compose** ensures the API waits for SQL Server before starting
+- **Functional guards and interceptors** (Angular 15+) avoid class boilerplate
+- **Standalone components** (Angular 14+) without NgModules
+- **Design tokens** (`_tokens.scss`) keep colors, spacing, and typography consistent
+
+### Authentication Flow
+
+1. User logs in at `/login` with username + password
+2. Backend validates credentials (BCrypt), returns JWT (8h expiry)
+3. Frontend stores token in `localStorage`
+4. `authInterceptor` attaches `Authorization: Bearer <token>` to every HTTP request
+5. `authGuard` prevents access to `/dashboard` without a valid token
+6. Backend `[Authorize]` attribute secures all `/loans` endpoints
+7. Logout clears the token and redirects to `/login`
+
+### What's Included (Beyond Requirements)
+
+- JWT authentication and authorization
+- GitHub Actions CI pipeline (build + test on push/PR)
+- Structured logging with ILogger
+- Dark theme UI with glassmorphism, animations, responsive grid
+- Loading, error, and empty states in the frontend
+- Design system with tokens, typography, component styles
+
+### What's Not Included (Would Add With More Time)
+
+- FluentValidation for input validation
+- Serilog for structured log output
+- Pagination, filtering, and sorting on GET /loans
+- Frontend forms for creating loans and making payments
+- Angular unit tests for components and services
+- Refresh token mechanism
+- API versioning
+
+---
+
+## Seed Data
+
+On first startup, the database is seeded with:
+
+| Applicant | Amount | Balance | Status |
+|-----------|--------|---------|--------|
+| John Doe | $25,000 | $18,750 | active |
+| Jane Smith | $15,000 | $0 | paid |
+| Robert Johnson | $50,000 | $32,500 | active |
+| Emily Williams | $10,000 | $0 | paid |
+| Michael Brown | $75,000 | $72,000 | active |
+
+Default user: `admin` / `admin123`
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Backend | .NET 8.0, C# |
+| ORM | Entity Framework Core 8 |
+| Database | SQL Server 2022 |
+| Auth | JWT (System.IdentityModel.Tokens.Jwt) |
+| Testing | xUnit, Moq, WebApplicationFactory |
+| CI | GitHub Actions |
+| Frontend | Angular 19, TypeScript |
+| UI | Angular Material, SCSS |
+| Container | Docker, Docker Compose |

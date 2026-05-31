@@ -1,0 +1,15 @@
+**/.git
+**/.vs
+**/.vscode
+**/bin
+**/obj
+**/node_modules
+**/dist
+**/.idea
+**/Dockerfile*
+**/docker-compose*
+**/.gitignore
+**/README.md
+**/*.log
+**/*.tmp
+**/*.bak

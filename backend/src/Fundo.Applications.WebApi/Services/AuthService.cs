@@ -42,32 +42,6 @@ namespace Fundo.Applications.WebApi.Services
             return GenerateJwtToken(user);
         }
 
-        public async Task<bool> ValidateUserAsync(string username, string password)
-        {
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Username == username);
-
-            if (user == null)
-            {
-                return false;
-            }
-
-            return VerifyPassword(password, user.PasswordHash);
-        }
-
-        public string HashPassword(string password)
-        {
-            return BCrypt.Net.BCrypt.HashPassword(password, workFactor: 12);
-        }
-
-        public string GenerateRefreshToken()
-        {
-            var randomNumber = new byte[32];
-            using var rng = System.Security.Cryptography.RandomNumberGenerator.Create();
-            rng.GetBytes(randomNumber);
-            return Convert.ToBase64String(randomNumber);
-        }
-
         private string GenerateJwtToken(User user)
         {
             var key = _configuration["Jwt:Key"];
