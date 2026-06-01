@@ -16,7 +16,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   const router = inject(Router);
 
-  // MAR CABRERA 06.01.2026 - Use withCredentials to include httpOnly cookies for better security
+    // Use withCredentials to include httpOnly cookies for better security
   // This prevents XSS attacks since cookies are not accessible via JavaScript
   req = req.clone({
     withCredentials: true

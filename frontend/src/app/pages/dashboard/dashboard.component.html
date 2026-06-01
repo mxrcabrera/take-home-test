@@ -166,3 +166,29 @@
 
   </main>
 </div>
+
+<ng-template #paymentDialog>
+  <div class="surface" style="padding: var(--sp-6); width: 320px;">
+    
+    <h2 mat-dialog-title>Payment</h2>
+    
+    <mat-dialog-content>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--sp-4);">
+        <span style="color: var(--text-secondary);">Balance:</span>
+        <span style="color: var(--text-primary); font-weight: 600;">{{ selectedLoan?.currentBalance | currency }}</span>
+      </div>
+      
+      <input type="number" 
+             [(ngModel)]="paymentAmount" 
+             class="form-control" 
+             placeholder="0.00"
+             style="width: 100%; box-sizing: border-box;">
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end" style="padding: 0; margin-top: var(--sp-6); display: flex; gap: var(--sp-3);">
+      <button mat-button mat-dialog-close class="btn btn--ghost" style="flex: 1;">Cancel</button>
+      <button mat-raised-button [mat-dialog-close]="paymentAmount" class="btn btn--primary" style="flex: 1;">Confirm</button>
+    </mat-dialog-actions>
+    
+  </div>
+</ng-template>

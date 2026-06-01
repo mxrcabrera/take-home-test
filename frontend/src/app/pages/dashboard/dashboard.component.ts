@@ -12,9 +12,9 @@ import { LoanConstants } from '../../constants/loan.constants';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatTableModule],
+  imports: [CommonModule, MatTableModule, FormsModule, MatDialogModule],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss'],
+  styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private readonly loanService = inject(LoanService);
@@ -37,6 +37,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   error: string | null = null;
   processingLoanId: number | null = null;
   paymentAmount: number = 0;
+  selectedLoan: Loan | null = null;
 
   private subscription: Subscription | null = null;
 
@@ -70,28 +71,38 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+
+
   makePayment(loan: Loan): void {
-    const amountStr = prompt(`Balance: ${loan.currentBalance.toFixed(2)}. Insert payment amount:`);
-    if (amountStr === null) return;
-    
-    const amount = Number(amountStr);
-    if (isNaN(amount) || amount <= 0 || amount > loan.currentBalance) {
-      alert('Invalid amount.');
-      return;
-    }
+    this.selectedLoan = loan;
+    this.paymentAmount = 0;
 
-    this.processingLoanId = loan.id;
+    const dialogRef = this.dialog.open(this.paymentDialog, { 
+      width: '320px',
+      panelClass: 'custom-loan-dialog'
+    });
 
-    this.loanService.makePayment(loan.id, amount).subscribe({
-      next: () => {
-        this.loadLoans();
-        this.processingLoanId = null; 
-        alert('Payment processed successfully.');
-      },
-      error: (err) => {
-        this.processingLoanId = null;
-        alert(err.status === 409 ? 'Data conflict. Please refresh the page.' : 'Payment failed.');
+    dialogRef.afterClosed().subscribe(amount => {
+      if (amount === undefined) return;
+
+      if (isNaN(amount) || amount <= 0 || amount > loan.currentBalance) {
+        alert('Invalid amount.');
+        return;
       }
+
+      this.processingLoanId = loan.id;
+
+      this.loanService.makePayment(loan.id, amount).subscribe({
+        next: () => {
+          this.loadLoans();
+          this.processingLoanId = null; 
+          alert('Payment processed successfully.');
+        },
+        error: (err) => {
+          this.processingLoanId = null;
+          alert(err.status === 409 ? 'Data conflict. Please refresh the page.' : 'Payment failed.');
+        }
+      });
     });
   }
 
