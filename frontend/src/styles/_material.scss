@@ -64,7 +64,6 @@
 }
 
 .custom-loan-dialog {
-  /* Reseteo agresivo de la estructura de Material */
   .mat-mdc-dialog-container, 
   .mat-mdc-dialog-surface {
     background: transparent !important;
@@ -75,13 +74,11 @@
     overflow: visible !important;
   }
 
-  /* Forzamos el texto para que NO sea gris oscuro de Material */
   .mat-mdc-dialog-content {
     padding: 0 !important;
     color: var(--text-primary) !important;
   }
 
-  /* Limpiamos el título */
   .mat-mdc-dialog-title {
     margin: 0 0 var(--sp-4) 0 !important;
     padding: 0 !important;
@@ -89,7 +86,6 @@
     font-size: var(--fs-md) !important;
   }
 
-  /* Input Number: chao flechitas */
   input[type=number]::-webkit-inner-spin-button,
   input[type=number]::-webkit-outer-spin-button {
     -webkit-appearance: none;

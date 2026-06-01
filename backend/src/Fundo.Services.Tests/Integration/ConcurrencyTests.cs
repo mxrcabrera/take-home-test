@@ -1,12 +1,10 @@
 using Fundo.Applications.WebApi.Data;
 using Fundo.Applications.WebApi.DTOs;
 using Fundo.Applications.WebApi.Models;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
