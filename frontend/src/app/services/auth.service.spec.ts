@@ -1,6 +1,6 @@
 /// <reference types="jasmine" />
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
 
@@ -9,7 +9,7 @@ describe('AuthService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      providers: [provideHttpClientTesting()],
     });
     httpMock = TestBed.inject(HttpTestingController);
   });
@@ -27,7 +27,7 @@ describe('AuthService', () => {
   it('checkAuthStatus sets authStatus to true when /me succeeds', async () => {
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      providers: [provideHttpClientTesting()],
     });
     const testService = TestBed.inject(AuthService);
     const testHttpMock = TestBed.inject(HttpTestingController);
@@ -43,7 +43,7 @@ describe('AuthService', () => {
   it('checkAuthStatus sets authStatus to false when /me fails', async () => {
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      providers: [provideHttpClientTesting()],
     });
     const testService = TestBed.inject(AuthService);
     const testHttpMock = TestBed.inject(HttpTestingController);
@@ -59,12 +59,11 @@ describe('AuthService', () => {
   it('login updates state on success with cookies', async () => {
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      providers: [provideHttpClientTesting()],
     });
     const service = TestBed.inject(AuthService);
     const testHttpMock = TestBed.inject(HttpTestingController);
     
-    // Handle initial checkAuthStatus
     testHttpMock.expectOne(`${environment.apiBase}/auth/me`).flush(null, { status: 401, statusText: 'Unauthorized' });
     await service.waitForAuthCheck();
 
@@ -87,12 +86,11 @@ describe('AuthService', () => {
   it('logout updates state with cookies', async () => {
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      providers: [provideHttpClientTesting()],
     });
     const service = TestBed.inject(AuthService);
     const testHttpMock = TestBed.inject(HttpTestingController);
     
-    // Handle initial checkAuthStatus
     testHttpMock.expectOne(`${environment.apiBase}/auth/me`).flush(null, { status: 401, statusText: 'Unauthorized' });
     await service.waitForAuthCheck();
 
