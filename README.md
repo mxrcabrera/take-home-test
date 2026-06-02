@@ -219,12 +219,12 @@ take-home-test/
 
 ### Technical Decisions
 
-- Input Validation: Added guards in the service layer to prevent negative payment amounts, ensuring financial integrity.
-- Concurrency Control: Implemented optimistic concurrency using `RowVersion` on the Loan entity. This prevents two users from updating the same loan balance simultaneously, which is critical for financial transactions.
+- Input Validation: Guards in service layer prevent negative payment amounts and payments exceeding current balance, ensuring financial integrity.
+- Concurrency Control: Optimistic concurrency using `RowVersion` on Loan entity prevents simultaneous balance updates. RowVersion initialized with empty array for EF Core 8 InMemory compatibility.
 - Audit Trail: Intentionally excluded `Delete` functionality. In financial applications, maintaining a complete history of all records is mandatory for audit purposes; therefore, loans are never deleted, only updated.
-- Security: Used BCrypt for password hashing and httpOnly cookies for session management to protect against XSS (Cross-Site Scripting) attacks, which is a more secure approach than storing tokens in LocalStorage.
-- Rate Limiting: Sliding window rate limiter (5 requests per minute per IP) on the login endpoint to prevent brute force attacks.
-- DB Retry Logic: Program.cs retries database connection up to 10 times with a 5-second delay to handle container startup ordering (SQL Server may not be ready when the API starts).
+- Security: BCrypt for password hashing and httpOnly cookies for session management to protect against XSS attacks, more secure than LocalStorage token storage.
+- Rate Limiting: Sliding window rate limiter (5 requests per minute per IP) on login endpoint prevents brute force attacks.
+- DB Retry Logic: Program.cs retries database connection up to 10 times with 5-second delay to handle container startup ordering.
 
 ### Design Decisions
 
