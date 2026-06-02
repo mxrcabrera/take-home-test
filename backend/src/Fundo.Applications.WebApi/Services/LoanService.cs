@@ -24,6 +24,9 @@ namespace Fundo.Applications.WebApi.Services {
             if (loan == null || loan.Status == LoanConstants.StatusPaid) 
                 return null;
 
+            if (amount > loan.CurrentBalance)
+                throw new InvalidOperationException("Payment amount exceeds current balance.");
+
             loan.CurrentBalance -= amount;
             
             if (loan.CurrentBalance <= ZeroBalance) {
